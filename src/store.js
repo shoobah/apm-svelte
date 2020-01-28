@@ -38,7 +38,7 @@ const products = [
   }
 ];
 
-const currentProduct = 0;
+const currentProduct = {};
 
 function redux(init, reducer) {
   const devTools =

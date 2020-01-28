@@ -1,15 +1,30 @@
 <script>
+  import { store } from "./store";
+  import { onDestroy } from "svelte";
+
   var pageTitle = "Product Edit";
   var errorMessage = "";
   var product = {};
   var displayMessage = {};
 
-  var product = {};
+  const unsubscribe = store.subscribe(p => {
+    console.log(
+      "%c🖖" + new Date().toLocaleTimeString("se") + " p:",
+      "color:lime",
+      p
+    );
+
+    product = p.currentProduct;
+  });
 
   function blur() {}
   function saveProduct() {}
   function cancelEdit() {}
   function deleteProduct() {}
+
+  onDestroy(() => {
+    unsubscribe();
+  });
 </script>
 
 {#if product}
@@ -25,13 +40,13 @@
 
             <div class="col-md-9">
               <input
-                class:is-invalid={displayMessage.productName}
                 class="form-control"
                 id="productNameId"
                 type="text"
                 placeholder="Name (required)"
                 formControlName="productName"
-                on:blur={blur} />
+                on:blur={blur}
+                bind:value={product.productName} />
             </div>
           </div>
 
@@ -47,7 +62,8 @@
                 type="text"
                 placeholder="Code (required)"
                 formControlName="productCode"
-                on:blur={blur} />
+                on:blur={blur}
+                bind:value={product.productCode} />
             </div>
           </div>
 
@@ -62,7 +78,8 @@
                 id="starRatingId"
                 type="text"
                 placeholder="Rating"
-                formControlName="starRating" />
+                formControlName="starRating"
+                bind:value={product.starRating} />
             </div>
           </div>
 
@@ -77,7 +94,8 @@
                 id="descriptionId"
                 placeholder="Description"
                 rows="3"
-                formControlName="description" />
+                formControlName="description"
+                bind:value={product.description} />
             </div>
           </div>
 

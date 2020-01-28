@@ -15,7 +15,6 @@
 
   function productSelected(product) {
     store.dispatch("setCurrent", product.id);
-    console.log("product", $store.currentProduct);
   }
 
   function newProduct() {}
