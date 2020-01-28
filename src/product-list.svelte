@@ -1,5 +1,5 @@
 <script>
-  import { store } from "./store";
+  import { store, actions } from "./store";
   const emptyProd = {
     id: 0,
     productName: "",
@@ -14,10 +14,12 @@
   var errorMessage = "";
 
   function productSelected(product) {
-    store.dispatch("setCurrent", product.id);
+    store.dispatch(actions.setCurrent, product.id);
   }
 
-  function newProduct() {}
+  function newProduct() {
+    store.dispatch(actions.newProduct);
+  }
 </script>
 
 <div class="card">
@@ -29,7 +31,7 @@
       {#each $store.products as product}
         <button
           class="list-group-item list-group-item-action rounded-0"
-          class:active={product && selectedProduct && product.id === selectedProduct.id}
+          class:active={product && selectedProduct && product.id === $store.currentProduct.id}
           on:click={productSelected(product)}>
           {product.productName}
           {#if displayCode}({product.productCode}){/if}

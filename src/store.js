@@ -1,5 +1,13 @@
 import { writable } from "svelte/store";
 
+const emptyProduct = {
+  id: 0,
+  productName: "",
+  productCode: "",
+  description: "",
+  starRating: null
+};
+
 const products = [
   {
     id: 1,
@@ -59,13 +67,35 @@ function redux(init, reducer) {
     dispatch
   };
 }
+export const actions = {
+  setCurrent: "setCurrent",
+  newProduct: "newProduct",
+  noSelected: "noSelected",
+  add: "add"
+};
 
 const reducer = (state, action, payload) => {
   switch (action) {
-    case "setCurrent":
+    case actions.setCurrent:
       return {
         ...state,
         currentProduct: products.find(prod => prod.id === payload)
+      };
+    case actions.newProduct:
+      return {
+        ...state,
+        currentProduct: { ...emptyProduct, id: products.count + 1 }
+      };
+    case actions.noSelected:
+      return {
+        ...state,
+        currentProduct: {}
+      };
+    case actions.add:
+      return {
+        ...state,
+        currentProduct: payload,
+        products: [...products, payload]
       };
     default:
       return state;

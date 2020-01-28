@@ -1,5 +1,5 @@
 <script>
-  import { store } from "./store";
+  import { store, actions } from "./store";
   import { onDestroy } from "svelte";
 
   var pageTitle = "Product Edit";
@@ -8,18 +8,15 @@
   var displayMessage = {};
 
   const unsubscribe = store.subscribe(p => {
-    console.log(
-      "%c🖖" + new Date().toLocaleTimeString("se") + " p:",
-      "color:lime",
-      p
-    );
-
     product = p.currentProduct;
   });
 
-  function blur() {}
-  function saveProduct() {}
-  function cancelEdit() {}
+  function saveProduct() {
+    store.dispatch(actions.add, product);
+  }
+  function cancelEdit() {
+    store.dispatch(actions.noSelected);
+  }
   function deleteProduct() {}
 
   onDestroy(() => {
@@ -27,9 +24,9 @@
   });
 </script>
 
-{#if product}
+{#if product && product.id >= 0}
   <div class="card">
-    <div class="card-header">{pageTitle}</div>
+    <div class="card-header">{pageTitle} - {product.id}</div>
     <div class="card-body">
       <form novalidate on:submit={saveProduct}>
         <fieldset>
@@ -41,11 +38,8 @@
             <div class="col-md-9">
               <input
                 class="form-control"
-                id="productNameId"
                 type="text"
                 placeholder="Name (required)"
-                formControlName="productName"
-                on:blur={blur}
                 bind:value={product.productName} />
             </div>
           </div>
@@ -58,11 +52,8 @@
             <div class="col-md-9">
               <input
                 class="form-control"
-                id="productCodeId"
                 type="text"
                 placeholder="Code (required)"
-                formControlName="productCode"
-                on:blur={blur}
                 bind:value={product.productCode} />
             </div>
           </div>
@@ -75,10 +66,8 @@
             <div class="col-md-9">
               <input
                 class="form-control"
-                id="starRatingId"
                 type="text"
                 placeholder="Rating"
-                formControlName="starRating"
                 bind:value={product.starRating} />
             </div>
           </div>
@@ -94,7 +83,6 @@
                 id="descriptionId"
                 placeholder="Description"
                 rows="3"
-                formControlName="description"
                 bind:value={product.description} />
             </div>
           </div>
@@ -104,10 +92,10 @@
               <span>
                 <button
                   class="btn btn-primary"
-                  type="submit"
+                  type="button"
                   style="width:80px;margin-right:10px"
-                  Save>
-                  Add
+                  on:click={saveProduct}>
+                  Save
                 </button>
               </span>
               <span>
