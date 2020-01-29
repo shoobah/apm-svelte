@@ -1,4 +1,5 @@
 import { writable } from "svelte/store";
+import { produce } from "immer";
 
 const emptyProduct = {
   id: 0,
@@ -55,10 +56,10 @@ function redux(init, reducer) {
 
   const { update, subscribe } = writable(init);
 
-  function dispatch(action, payload) {
+  function dispatch(action) {
     update(state => {
       devTools.send(action, state);
-      return reducer(state, action, payload);
+      return reducer(state, action);
     });
   }
 
@@ -67,39 +68,34 @@ function redux(init, reducer) {
     dispatch
   };
 }
-export const actions = {
-  setCurrent: "setCurrent",
-  newProduct: "newProduct",
-  noSelected: "noSelected",
-  add: "add"
+export const actionTypes = {
+  setCurrent: "[Product] Set current product",
+  newProduct: "[Product] Create new",
+  noSelected: "[Product] Clear selected product",
+  add: "[Product] Add new product",
+  update: "[Product] Add new product"
 };
 
-const reducer = (state, action, payload) => {
-  switch (action) {
-    case actions.setCurrent:
-      return {
-        ...state,
-        currentProduct: products.find(prod => prod.id === payload)
-      };
-    case actions.newProduct:
-      return {
-        ...state,
-        currentProduct: { ...emptyProduct, id: products.count + 1 }
-      };
-    case actions.noSelected:
-      return {
-        ...state,
-        currentProduct: {}
-      };
-    case actions.add:
-      return {
-        ...state,
-        currentProduct: payload,
-        products: [...products, payload]
-      };
-    default:
-      return state;
+const reducer = produce((draft, action) => {
+  switch (action.type) {
+    case actionTypes.setCurrent:
+      draft.currentProduct = products.find(prod => prod.id === action.payload);
+      break;
+    case actionTypes.newProduct:
+      draft.currentProduct = { ...emptyProduct, id: products.length + 1 };
+      break;
+    case actionTypes.noSelected:
+      draft.currentProduct = {};
+      break;
+    case actionTypes.add:
+      if (draft.products.findIndex(p => p.id === action.payload.id) !== -1) {
+        draft.products = [...products, payload];
+      } else {
+        draft.currentProduct = action.payload;
+        draft.products.push(action.payload);
+      }
+      break;
   }
-};
+});
 
 export const store = redux({ products, currentProduct }, reducer);

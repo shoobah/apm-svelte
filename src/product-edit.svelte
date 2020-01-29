@@ -1,5 +1,5 @@
 <script>
-  import { store, actions } from "./store";
+  import { store, actionTypes } from "./store";
   import { onDestroy } from "svelte";
 
   var pageTitle = "Product Edit";
@@ -8,14 +8,16 @@
   var displayMessage = {};
 
   const unsubscribe = store.subscribe(p => {
-    product = p.currentProduct;
+    if (p.currentProduct.id) {
+      product = { ...p.currentProduct };
+    }
   });
 
   function saveProduct() {
-    store.dispatch(actions.add, product);
+    store.dispatch({ type: actionTypes.add, payload: product });
   }
   function cancelEdit() {
-    store.dispatch(actions.noSelected);
+    store.dispatch({ type: actionTypes.noSelected });
   }
   function deleteProduct() {}
 
@@ -24,6 +26,7 @@
   });
 </script>
 
+365
 {#if product && product.id >= 0}
   <div class="card">
     <div class="card-header">{pageTitle} - {product.id}</div>

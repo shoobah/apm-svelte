@@ -1,5 +1,5 @@
 <script>
-  import { store, actions } from "./store";
+  import { store, actionTypes } from "./store";
   const emptyProd = {
     id: 0,
     productName: "",
@@ -14,11 +14,11 @@
   var errorMessage = "";
 
   function productSelected(product) {
-    store.dispatch(actions.setCurrent, product.id);
+    store.dispatch({ type: actionTypes.setCurrent, payload: product.id });
   }
 
   function newProduct() {
-    store.dispatch(actions.newProduct);
+    store.dispatch({ type: actionTypes.newProduct });
   }
 </script>
 
