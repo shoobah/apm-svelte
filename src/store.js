@@ -1,51 +1,6 @@
 import { writable } from "svelte/store";
 import { produce } from "immer";
-
-const emptyProduct = {
-  id: 0,
-  productName: "",
-  productCode: "",
-  description: "",
-  starRating: null
-};
-
-const products = [
-  {
-    id: 1,
-    productName: "Leaf Rake",
-    productCode: "GDN-0011",
-    description: "Leaf rake with 48-inch wooden handle",
-    starRating: 3.2
-  },
-  {
-    id: 2,
-    productName: "Garden Cart",
-    productCode: "GDN-0023",
-    description: "15 gallon capacity rolling garden cart",
-    starRating: 4.2
-  },
-  {
-    id: 3,
-    productName: "Hammer",
-    productCode: "TBX-0048",
-    description: "Curved claw steel hammer",
-    starRating: 4.8
-  },
-  {
-    id: 4,
-    productName: "Saw",
-    productCode: "TBX-0022",
-    description: "15-inch steel blade hand saw",
-    starRating: 3.7
-  },
-  {
-    id: 5,
-    productName: "Video Game Controller",
-    productCode: "GMG-0042",
-    description: "Standard two-button video game controller",
-    starRating: 4.6
-  }
-];
+import { emptyProduct, products } from "./dummy/data";
 
 const currentProduct = {};
 
@@ -73,26 +28,40 @@ export const actionTypes = {
   newProduct: "[Product] Create new",
   noSelected: "[Product] Clear selected product",
   add: "[Product] Add new product",
-  update: "[Product] Add new product"
+  update: "[Product] Add new product",
+  delete: "[Product] Delete a product"
 };
 
 const reducer = produce((draft, action) => {
   switch (action.type) {
     case actionTypes.setCurrent:
-      draft.currentProduct = products.find(prod => prod.id === action.payload);
+      draft.currentProduct = draft.products.find(
+        prod => prod.id === action.payload
+      );
       break;
     case actionTypes.newProduct:
-      draft.currentProduct = { ...emptyProduct, id: products.length + 1 };
+      draft.currentProduct = { ...emptyProduct, id: draft.products.length + 1 };
       break;
     case actionTypes.noSelected:
       draft.currentProduct = {};
       break;
     case actionTypes.add:
-      if (draft.products.findIndex(p => p.id === action.payload.id) !== -1) {
-        draft.products = [...products, payload];
+      const found = draft.products.findIndex(p => p.id === action.payload.id);
+      if (found !== -1) {
+        draft.products.splice(found, 1, action.payload);
+        draft.currentProduct = action.payload;
       } else {
         draft.currentProduct = action.payload;
         draft.products.push(action.payload);
+      }
+      break;
+    case actionTypes.delete:
+      console.log("draft", draft);
+
+      var i = draft.products.findIndex(p => p.id === draft.currentProduct.id);
+      if (i !== -1) {
+        draft.products.splice(i, 1);
+        draft.currentProduct = null;
       }
       break;
   }

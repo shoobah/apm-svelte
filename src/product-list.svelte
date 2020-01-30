@@ -31,7 +31,7 @@
       {#each $store.products as product}
         <button
           class="list-group-item list-group-item-action rounded-0"
-          class:active={product && selectedProduct && product.id === $store.currentProduct.id}
+          class:active={product && selectedProduct && $store.currentProduct && product.id === $store.currentProduct.id}
           on:click={productSelected(product)}>
           {product.productName}
           {#if displayCode}({product.productCode}){/if}

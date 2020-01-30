@@ -8,9 +8,7 @@
   var displayMessage = {};
 
   const unsubscribe = store.subscribe(p => {
-    if (p.currentProduct.id) {
-      product = { ...p.currentProduct };
-    }
+    product = { ...p.currentProduct };
   });
 
   function saveProduct() {
@@ -19,14 +17,15 @@
   function cancelEdit() {
     store.dispatch({ type: actionTypes.noSelected });
   }
-  function deleteProduct() {}
+  function deleteProduct() {
+    store.dispatch({ type: actionTypes.delete });
+  }
 
   onDestroy(() => {
     unsubscribe();
   });
 </script>
 
-365
 {#if product && product.id >= 0}
   <div class="card">
     <div class="card-header">{pageTitle} - {product.id}</div>
@@ -115,7 +114,7 @@
                   class="btn btn-light"
                   type="button"
                   style="width:80px"
-                  click={deleteProduct}>
+                  on:click={deleteProduct}>
                   Delete
                 </button>
               </span>
